@@ -21,12 +21,14 @@ describe("then", () => {
     expect(onSuccess).toHaveBeenCalledTimes(0)
   })
 
-  it("with multiple thens for same promise", () => {
-    const checkFunc = v => expect(v).toEqual(DEFAULT_VALUE)
+  it("with multiple thens for same promise", async () => {
+    const onSuccess = jest.fn()
     const mainPromise = buildPromise()
-    const promise1 = mainPromise.then(checkFunc)
-    const promise2 = mainPromise.then(checkFunc)
-    return Promise.allSettled([promise1, promise2])
+    const promise1 = mainPromise.then(onSuccess)
+    const promise2 = mainPromise.then(onSuccess)
+    await Promise.allSettled([promise1, promise2])
+    expect(onSuccess).toHaveBeenCalledTimes(2)
+    expect(onSuccess.mock.calls).toEqual([ [ DEFAULT_VALUE ], [ DEFAULT_VALUE ] ])
   })
 
   it("with then and catch", async () => {
